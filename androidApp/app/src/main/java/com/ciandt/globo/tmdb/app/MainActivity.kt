@@ -12,7 +12,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
@@ -21,9 +20,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -45,7 +46,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 @Preview
 fun HomeScreen() {
-    MovieList()
+    Scaffold(
+        bottomBar = {},
+        topBar = {},
+        floatingActionButton = {},
+    ) { innerPadding ->
+        MovieList(Modifier.padding(innerPadding))
+    }
 }
 
 @Composable
@@ -59,6 +66,7 @@ fun MovieList(modifier: Modifier = Modifier) {
             .background(color = Color(0xFF1F1F1F))
             .padding(horizontal = 32.dp)
             .fillMaxSize()
+            .then(modifier)
     ) {
         item {
             Section(

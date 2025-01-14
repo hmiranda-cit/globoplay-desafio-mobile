@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.preview)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.core)

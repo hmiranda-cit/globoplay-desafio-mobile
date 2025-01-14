@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,7 +45,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 @Preview
 fun HomeScreen() {
+    MovieList()
+}
+
+@Composable
+@Preview
+fun MovieList(modifier: Modifier = Modifier) {
+    val lazyColumState = rememberLazyListState()
     LazyColumn(
+        state = lazyColumState,
         verticalArrangement = Arrangement.spacedBy(48.dp, Alignment.CenterVertically),
         modifier = Modifier
             .background(color = Color(0xFF1F1F1F))
@@ -100,7 +109,11 @@ fun Section(header: String, contents: List<SectionContent>, modifier: Modifier =
     ) {
         BasicText(style = TextStyle(color = Color.White, fontSize = 32.sp), text = header)
 
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        val lazyRowState = rememberLazyListState()
+        LazyRow(
+            state = lazyRowState,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             items(contents) {
                 AsyncImage(
                     contentDescription = it.accessibilityDescription,

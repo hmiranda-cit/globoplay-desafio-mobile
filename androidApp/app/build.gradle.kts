@@ -66,13 +66,17 @@ android {
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     debugImplementation(platform(libs.androidx.compose.bom))
+    implementation(platform(libs.coil.bom))
 
     implementation(libs.androidx.activity)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.preview)
+    implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.core)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
 
     debugImplementation(libs.androidx.compose.preview.debug)
 }

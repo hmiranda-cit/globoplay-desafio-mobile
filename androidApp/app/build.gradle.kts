@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.preview)
     implementation(libs.androidx.core)
+    implementation(libs.androidx.core.splashscreen)
 
     debugImplementation(libs.androidx.compose.preview.debug)
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 2024 CI&T. All Rights Reserved.
+Unauthorized copying of this file's contents, via any medium, is strictly prohibited
+Proprietary
+Written by Henrique Miranda <hmiranda@ciandt.com>
+-->
+
+<resources>
+    <style name="Theme.ThisApp.Main" parent="@android:style/Theme.Material.NoActionBar" />
+
+    <style
+        name="Theme.ThisApp.SplashScreen"
+        parent="@style/Theme.SplashScreen.IconBackground"
+        >
+        <item name="postSplashScreenTheme">@style/Theme.ThisApp.Main</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenBackground">@color/splashscreen_background</item>
+    </style>
+</resources>

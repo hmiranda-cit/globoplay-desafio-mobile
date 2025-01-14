@@ -1,0 +1,10 @@
+/gradlew*
+/local.properties
+
+/.gradle/
+/.idea/
+/app/build/
+
+/gradle/
+!/gradle/libs.versions.toml
+!/gradle/wrapper/gradle-wrapper.properties

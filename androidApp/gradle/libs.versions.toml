@@ -1,0 +1,20 @@
+# Copyright © 2024 CI&T. All Rights Reserved.
+# Unauthorized copying of this file's contents, via any medium, is strictly prohibited
+# Proprietary
+# Written by Henrique Miranda <hmiranda@ciandt.com>
+
+[versions]
+activity = "1.9.3!!"
+
+[libraries]
+androidx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
+androidx-compose-bom = "androidx.compose:compose-bom:2024.12.01!!"
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-preview-debug = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-core = "androidx.core:core-ktx:1.15.0!!"
+
+[plugins]
+android-application = "com.android.application:8.6.1!!"
+kotlin-android = "org.jetbrains.kotlin.android:1.9.0!!"

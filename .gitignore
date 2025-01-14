@@ -1,0 +1,14 @@
+# Copyright © 2024 CI&T. All Rights Reserved.
+# Unauthorized copying of this file's contents, via any medium, is strictly prohibited
+# Proprietary
+# Written by Henrique Miranda <hmiranda@ciandt.com>
+
+/androidApp/local.properties
+/androidApp/gradlew*
+
+/androidApp/.gradle/
+/androidApp/.idea/
+
+/androidApp/gradle/
+!/androidApp/gradle/wrapper/gradle-wrapper.properties
+!/androidApp/gradle/libs.versions.toml

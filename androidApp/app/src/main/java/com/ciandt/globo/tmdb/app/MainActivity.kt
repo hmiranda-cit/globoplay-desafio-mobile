@@ -39,18 +39,13 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -68,9 +63,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 @Preview
 fun HomeScreen() {
-    val designSpecScreenSize = LocalDensity.current.run { Size(width = 720f, height = 1280f).toDpSize() }
-    val deviceScreenSize = LocalConfiguration.current.run { DpSize(screenWidthDp.dp, screenHeightDp.dp) }
-
     Scaffold(
         bottomBar = {
             BottomAppBar(
@@ -89,10 +81,6 @@ fun HomeScreen() {
         floatingActionButton = {},
         modifier = Modifier
             .fillMaxSize()
-            .scale(
-                scaleX = deviceScreenSize.width / designSpecScreenSize.width,
-                scaleY = deviceScreenSize.height / designSpecScreenSize.height,
-            )
     ) { innerPadding ->
         ContentList(
             Modifier

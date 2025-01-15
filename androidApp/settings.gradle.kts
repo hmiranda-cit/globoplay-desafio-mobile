@@ -29,4 +29,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "TheMovieDbApp"
-include(":app")
+include(":app", ":openApiGenerator")

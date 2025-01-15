@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TheMovieDbApp</string>
+
+    <string name="home_screen_bottombar_button_text">Início</string>
 </resources>

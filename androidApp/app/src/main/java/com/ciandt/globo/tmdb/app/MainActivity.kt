@@ -10,16 +10,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,15 +35,22 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -55,21 +68,38 @@ class MainActivity : ComponentActivity() {
 @Composable
 @Preview
 fun HomeScreen() {
-    val referenceScreenHeightPx = 1280f
-    val referenceBottomBarHeightPx = 112f
+    val designSpecScreenSize = LocalDensity.current.run { Size(width = 720f, height = 1280f).toDpSize() }
+    val deviceScreenSize = LocalConfiguration.current.run { DpSize(screenWidthDp.dp, screenHeightDp.dp) }
 
     Scaffold(
         bottomBar = {
             BottomAppBar(
                 Modifier
-                    .fillMaxHeight(referenceBottomBarHeightPx / referenceScreenHeightPx)
+                    .requiredHeight(112.dp)
                     .fillMaxWidth()
             )
         },
-        topBar = {},
+        topBar = {
+            TopBar(
+                Modifier
+                    .requiredHeight(192.dp)
+                    .fillMaxWidth()
+            )
+        },
         floatingActionButton = {},
+        modifier = Modifier
+            .fillMaxSize()
+            .scale(
+                scaleX = deviceScreenSize.width / designSpecScreenSize.width,
+                scaleY = deviceScreenSize.height / designSpecScreenSize.height,
+            )
     ) { innerPadding ->
-        MovieList(Modifier.padding(innerPadding))
+        ContentList(
+            Modifier
+                .background(color = Color(0xFF1F1F1F))
+                .fillMaxSize()
+                .padding(innerPadding)
+        )
     }
 }
 
@@ -127,50 +157,111 @@ fun BottomAppBarButton(
 }
 
 @Composable
-@Preview
-fun MovieList(modifier: Modifier = Modifier) {
-    val lazyColumState = rememberLazyListState()
-    LazyColumn(
-        state = lazyColumState,
-        verticalArrangement = Arrangement.spacedBy(48.dp, Alignment.CenterVertically),
+fun TopBar(modifier: Modifier = Modifier) {
+    TopAppBar(
+        backgroundColor = Color.Black,
         modifier = Modifier
-            .background(color = Color(0xFF1F1F1F))
-            .padding(horizontal = 32.dp)
-            .fillMaxSize()
             .then(modifier)
     ) {
-        item {
-            Section(
-                "Comics",
-                listOf(
-                    SectionContent("Mickey", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7oaspVjLS8F-NDM-C7m8YJHX1eSPlcvw197CMD7ryqhioXalaoOOb4-Z-lyQDqzUrouM&usqp=CAU"),
-                    SectionContent("Tintin", "https://bleedingcool.com/wp-content/uploads/2025/01/084fd4b8-5923-40d5-bfb5-7301d0b47221.jpeg"),
-                    SectionContent("Popeye", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQduJlbk6z6w-5aZqbWl21_PgRBMlH0_euTag&s"),
-                    SectionContent("Zé Carioca", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHHaJGZ3PcpUwQ2eXiI62mtjnHb-hfDafwhQ&s"),
+        TopBarLogo(
+            Modifier
+                .requiredHeight(48.dp)
+                .wrapContentWidth()
+        )
+    }
+}
+
+@Composable
+fun TopBarLogo(modifier: Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .then(modifier)
+    ) {
+        Image(
+            colorFilter = ColorFilter.tint(Color.White),
+            contentDescription = null,
+            contentScale = ContentScale.FillHeight,
+            painter = painterResource(R.drawable.globoplay_logo),
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
+@Composable
+@Preview
+fun ContentList(modifier: Modifier = Modifier) {
+    Box(Modifier.then(modifier)) {
+        val lazyColumState = rememberLazyListState()
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            state = lazyColumState,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .fillMaxSize()
+        ) {
+            contentListItem {
+                Section(
+                    "Comics",
+                    listOf(
+                        SectionContent("Mickey", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7oaspVjLS8F-NDM-C7m8YJHX1eSPlcvw197CMD7ryqhioXalaoOOb4-Z-lyQDqzUrouM&usqp=CAU"),
+                        SectionContent("Tintin", "https://bleedingcool.com/wp-content/uploads/2025/01/084fd4b8-5923-40d5-bfb5-7301d0b47221.jpeg"),
+                        SectionContent("Popeye", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQduJlbk6z6w-5aZqbWl21_PgRBMlH0_euTag&s"),
+                        SectionContent("Zé Carioca", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHHaJGZ3PcpUwQ2eXiI62mtjnHb-hfDafwhQ&s"),
+                    )
                 )
-            )
+            }
+
+            contentListItem {
+                Section(
+                    "Movies",
+                    listOf(
+                        SectionContent("Cinderela", "https://upload.wikimedia.org/wikipedia/pt/4/47/Cinderela_Baiana.jpg"),
+                        SectionContent("Darko", "https://upload.wikimedia.org/wikipedia/pt/thumb/5/58/Donnie_Darko.jpg/220px-Donnie_Darko.jpg"),
+                        SectionContent("Godfather", "https://upload.wikimedia.org/wikipedia/pt/a/af/The_Godfather%2C_The_Game.jpg"),
+                        SectionContent("Juno", "https://upload.wikimedia.org/wikipedia/pt/thumb/6/6b/Juno_P%C3%B4ster.jpg/220px-Juno_P%C3%B4ster.jpg"),
+                    )
+                )
+            }
+
+            contentListItem {
+                Section(
+                    "Books",
+                    listOf(
+                        SectionContent("Casmurro", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Dom_Casmurro.djvu/page1-369px-Dom_Casmurro.djvu.jpg"),
+                        SectionContent("AM", "https://upload.wikimedia.org/wikipedia/en/thumb/4/47/IHaveNoMouth.jpg/220px-IHaveNoMouth.jpg"),
+                        SectionContent("Orbis", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Esmeraldo_de_situ_orbis%2C_1892.JPG/800px-Esmeraldo_de_situ_orbis%2C_1892.JPG"),
+                        SectionContent("Juno", "https://upload.wikimedia.org/wikipedia/en/c/cb/The_Chronicles_of_Narnia_box_set_cover.jpg"),
+                    )
+                )
+            }
         }
-        item {
-            Section(
-                "Movies",
-                listOf(
-                    SectionContent("Cinderela", "https://upload.wikimedia.org/wikipedia/pt/4/47/Cinderela_Baiana.jpg"),
-                    SectionContent("Darko", "https://upload.wikimedia.org/wikipedia/pt/thumb/5/58/Donnie_Darko.jpg/220px-Donnie_Darko.jpg"),
-                    SectionContent("Godfather", "https://upload.wikimedia.org/wikipedia/pt/a/af/The_Godfather%2C_The_Game.jpg"),
-                    SectionContent("Juno", "https://upload.wikimedia.org/wikipedia/pt/thumb/6/6b/Juno_P%C3%B4ster.jpg/220px-Juno_P%C3%B4ster.jpg"),
-                )
-            )
-        }
-        item {
-            Section(
-                "Books",
-                listOf(
-                    SectionContent("Casmurro", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Dom_Casmurro.djvu/page1-369px-Dom_Casmurro.djvu.jpg"),
-                    SectionContent("AM", "https://upload.wikimedia.org/wikipedia/en/thumb/4/47/IHaveNoMouth.jpg/220px-IHaveNoMouth.jpg"),
-                    SectionContent("Orbis", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Esmeraldo_de_situ_orbis%2C_1892.JPG/800px-Esmeraldo_de_situ_orbis%2C_1892.JPG"),
-                    SectionContent("Juno", "https://upload.wikimedia.org/wikipedia/en/c/cb/The_Chronicles_of_Narnia_box_set_cover.jpg"),
-                )
-            )
+    }
+}
+
+@Composable
+fun ContentListSpacer(modifier: Modifier = Modifier) {
+    Spacer(
+        Modifier
+            .requiredHeight(48.dp)
+            .then(modifier)
+    )
+}
+
+inline fun LazyListScope.contentListItem(crossinline content: @Composable (() -> Unit)) {
+    item {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(Alignment.CenterVertically)
+        ) {
+            ContentListSpacer()
+            content.invoke()
+            ContentListSpacer()
         }
     }
 }
@@ -184,7 +275,8 @@ data class SectionContent(
 fun Section(header: String, contents: List<SectionContent>, modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterVertically),
-        modifier = modifier
+        modifier = Modifier
+            .then(modifier)
     ) {
         BasicText(style = TextStyle(color = Color.White, fontSize = 32.sp), text = header)
 

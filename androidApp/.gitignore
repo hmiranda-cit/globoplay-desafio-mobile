@@ -1,9 +1,16 @@
 /gradlew*
+/apiKeys.properties
 /local.properties
+
+/app/src/main/cpp/secrets.cpp
+/app/src/main/cpp/secrets.hpp
+/app/src/main/java/com/ciandt/globo/tmdb/app/Secrets.kt
 
 /.gradle/
 /.idea/
+/app/.cxx
 /app/build/
+/openApiGenerator/build
 
 /gradle/
 !/gradle/libs.versions.toml

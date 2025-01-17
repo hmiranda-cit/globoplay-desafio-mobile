@@ -15,17 +15,25 @@ private const val BEST_POSTER_SIZE = "original"
 private const val POSTER_SIZE_REGEX = """w[0-9]+"""
 private const val SOAP_OPERA_GENRE_NAME = "Soap"
 
-data class TvSeriesContent(
-    val series: List<SectionContent>,
-    val soapOperas: List<SectionContent>,
-)
-
 class HomeUseCase(
     private val apiClient: DefaultApi,
     private val ioDispatcher: CoroutineDispatcher,
     private val workDispatcher: CoroutineDispatcher,
 ) {
-    suspend fun loadPosterPathUrlPrefix(): String {
+    suspend fun loadHomeScreenData(): HomeScreenData = withContext(workDispatcher) {
+        val deferredSoapOperaGenreId = async { loadSoapOperaGenreId() }
+        val posterPathUrlPrefix = loadPosterPathUrlPrefix()
+
+        val movieData = async { loadMovieSectionContent(posterPathUrlPrefix) }
+
+        val soapOperaGenreId = deferredSoapOperaGenreId.await()
+        val deferredTvSeriesContent = async { loadTvSeriesContent(posterPathUrlPrefix, withoutGenres = soapOperaGenreId) }
+        val soapOperasContent = loadTvSeriesContent(posterPathUrlPrefix, withGenres = soapOperaGenreId)
+
+        HomeScreenData(movieData.await(), deferredTvSeriesContent.await(), soapOperasContent)
+    }
+
+    private suspend fun loadPosterPathUrlPrefix(): String {
         val response = withContext(ioDispatcher) { apiClient.configurationDetails() }
         return withContext(workDispatcher) {
             val configuration = requireNotNull(response.images)
@@ -56,7 +64,7 @@ class HomeUseCase(
         }
     }
 
-    suspend fun loadMovieSectionContent(posterPathUrlPrefix: String): List<SectionContent> {
+    private suspend fun loadMovieSectionContent(posterPathUrlPrefix: String): List<SectionContent> {
         val response = withContext(ioDispatcher) { apiClient.discoverMovie() }
         return withContext(workDispatcher) {
             response.results
@@ -71,38 +79,27 @@ class HomeUseCase(
         }
     }
 
-    suspend fun loadTvSeriesContent(posterPathUrlPrefix: String): TvSeriesContent {
-        return withContext(ioDispatcher) {
-            val soapGenreIdDeferred = async { loadSoapOperaGenreId() }
-            val response = apiClient.discoverTv()
-            withContext(workDispatcher) {
-                val results = response.results
-                require(!results.isNullOrEmpty())
-
-                val series = mutableListOf<SectionContent>()
-                val soapOperas = mutableListOf<SectionContent>()
-                val tvSeriesContent = TvSeriesContent(series, soapOperas)
-
-                val soapOperaGenreId = soapGenreIdDeferred.await()
-                for (result in results) {
-                    val accessibilityDescription = result.name.orEmpty()
-                    val imageModel = "$posterPathUrlPrefix${result.posterPath}" ?: continue
-                    val content = SectionContent(accessibilityDescription, imageModel)
-
-                    val destination = if (result.genreIds?.contains(soapOperaGenreId) == true) soapOperas else series
-                    destination.add(content)
+    private suspend fun loadTvSeriesContent(
+        posterPathUrlPrefix: String,
+        withGenres: String? = null,
+        withoutGenres: String? = null,
+    ): List<SectionContent> {
+        val response = withContext(ioDispatcher) { apiClient.discoverTv(withGenres = withGenres, withoutGenres = withoutGenres) }
+        return withContext(workDispatcher) {
+            response.results
+                ?.map {
+                    val posterPath = requireNotNull(it.posterPath)
+                    SectionContent(requireNotNull(it.name), imageModel = "$posterPathUrlPrefix$posterPath")
                 }
-
-                tvSeriesContent
-            }
+                .orEmpty()
         }
     }
 
-    private suspend fun loadSoapOperaGenreId(): Int? {
+    private suspend fun loadSoapOperaGenreId(): String? {
         val response = withContext(ioDispatcher) { apiClient.genreTvList() }
         return withContext(workDispatcher) {
             val soapOperaGenre = requireNotNull(response.genres).first { it.name == SOAP_OPERA_GENRE_NAME }
-            soapOperaGenre.id
+            soapOperaGenre.id?.toString()
         }
     }
 }

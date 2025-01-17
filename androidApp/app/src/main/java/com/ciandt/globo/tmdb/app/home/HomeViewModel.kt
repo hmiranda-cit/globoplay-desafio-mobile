@@ -7,6 +7,7 @@
 package com.ciandt.globo.tmdb.app.home
 
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext
@@ -15,7 +16,7 @@ class HomeViewModel(
     private val useCase: HomeUseCase,
     private val workerDispatcher: CoroutineDispatcher,
 ) {
-    val movieSectionDataFlow = MutableSharedFlow<List<SectionContent>>(
+    val homeScreenDataFlow = MutableSharedFlow<HomeScreenData>(
         replay = 0,
         extraBufferCapacity = 0,
         onBufferOverflow = BufferOverflow.SUSPEND,
@@ -24,9 +25,12 @@ class HomeViewModel(
     suspend fun onUiVisible() {
         withContext(workerDispatcher) {
             val posterPathUrlPrefix = useCase.loadPosterPathUrlPrefix()
-            val data = useCase.loadMovieSectionContent(posterPathUrlPrefix)
 
-            movieSectionDataFlow.emit(data)
+            val movieData = async { useCase.loadMovieSectionContent(posterPathUrlPrefix) }
+            val tvSeriesContent = useCase.loadTvSeriesContent(posterPathUrlPrefix)
+
+            val homeScreenData = HomeScreenData(movieData.await(), tvSeriesContent.series, tvSeriesContent.soapOperas)
+            homeScreenDataFlow.emit(homeScreenData)
         }
     }
 }

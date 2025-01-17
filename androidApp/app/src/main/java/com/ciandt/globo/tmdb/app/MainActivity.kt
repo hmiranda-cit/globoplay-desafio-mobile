@@ -38,13 +38,19 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch(Dispatchers.Main.immediate) {
             val movieSectionHeader = getString(R.string.home_screen_movie_section_header)
+            val seriesSectionHeader = getString(R.string.home_screen_series_section_header)
+            val soapOperaSectionHeader = getString(R.string.home_screen_soapoperas_section_header)
             val viewModel = HomeViewModel(
                 HomeUseCase(DefaultApi(), Dispatchers.IO, Dispatchers.Default),
                 Dispatchers.Default,
             )
 
-            viewModel.movieSectionDataFlow
-                .onEach { sectionsRenderingData.add(SectionRenderingData(it, movieSectionHeader)) }
+            viewModel.homeScreenDataFlow
+                .onEach {
+                    sectionsRenderingData.add(SectionRenderingData(it.movies, movieSectionHeader))
+                    sectionsRenderingData.add(SectionRenderingData(it.series, seriesSectionHeader))
+                    sectionsRenderingData.add(SectionRenderingData(it.soapOperas, soapOperaSectionHeader))
+                }
                 .launchIn(this)
 
             repeatOnLifecycle(Lifecycle.State.STARTED) {

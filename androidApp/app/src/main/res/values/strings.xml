@@ -3,4 +3,6 @@
 
     <string name="home_screen_bottombar_button_text">Início</string>
     <string name="home_screen_movie_section_header">Filmes</string>
+    <string name="home_screen_series_section_header">Séries</string>
+    <string name="home_screen_soapoperas_section_header">Novelas</string>
 </resources>
